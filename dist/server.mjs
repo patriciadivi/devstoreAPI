@@ -1,12 +1,25 @@
 // src/server.ts
-import fastify from "fastify";
-var app = fastify();
-app.listen({
-  host: "0.0.0.0",
-  port: process.env.PORT ? Number(process.env.PORT) : 3333
-}).then(() => {
-  console.log("HTTP server running!");
-});
+import jsonServer from "json-server";
+import dotenv from "dotenv";
+dotenv.config();
+var server = jsonServer.create();
+var router = jsonServer.router("db.json");
+var middlewares = jsonServer.defaults();
+server.use(middlewares);
+server.use(jsonServer.rewriter({
+  "/api/*": "/$1",
+  "/blog/:resource/:id/show": "/:resource/:id"
+}));
+server.use(router);
+var PORT = process.env.PORT || 3e3;
+try {
+  server.listen(PORT, () => {
+    console.log(`JSON Server is running on PORT ${PORT}`);
+  });
+} catch (error) {
+  console.error("Error starting the server:", error);
+}
+var server_default = server;
 export {
-  app
+  server_default as default
 };
