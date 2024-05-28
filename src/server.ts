@@ -1,19 +1,42 @@
-import fastify from "fastify";
+import jsonServer from 'json-server';
+import fs from 'fs';
+import path from 'path';
+import dotenv from 'dotenv';
 
-import fastifyCors from "@fastify/cors";
-import { routes } from "./routes";
+dotenv.config();
 
-export const app = fastify()
+const server = jsonServer.create();
 
-app.register(fastifyCors, {
-  origin: '*',
-})
+// Uncomment to allow write operations
+// const filePath = path.join('db.json');
+// const data = fs.readFileSync(filePath, "utf-8");
+// const db = JSON.parse(data);
+// const router = jsonServer.router(db);
 
-app.register(routes)
+// Comment out to allow write operations
+const router = jsonServer.router('db.json');
 
-app.listen({
-  host: '0.0.0.0',
-  port: process.env.PORT ? Number(process.env.PORT) : 3333,
-}).then(() => {
-  console.log('HTTP server running!')
-})
+const middlewares = jsonServer.defaults();
+
+server.use(middlewares);
+
+// Add this before server.use(router)
+server.use(jsonServer.rewriter({
+    '/api/*': '/$1',
+    '/blog/:resource/:id/show': '/:resource/:id'
+}));
+
+server.use(router);
+
+const PORT = Number(process.env.PORT) || 3000;
+
+try {
+    server.listen(PORT, () => {
+        console.log(`JSON Server is running on PORT ${PORT}`);
+    });
+} catch (error) {
+    console.error('Error starting the server:', error);
+}
+
+// Export the Server API
+export default server;
