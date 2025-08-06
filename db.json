@@ -46,7 +46,7 @@
       "featured": false
     }
   ],
-  "products02": [
+  "comments": [
     {
       "id": 1,
       "title": "Moletom Never Stop Learning",
@@ -57,7 +57,7 @@
       "featured": true
     },
     {
-      "id": 1,
+      "id": 2,
       "title": "Moletom Never Stop Learning",
       "slug": "moletom-never-stop-learning",
       "price": 129,
